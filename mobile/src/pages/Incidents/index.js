@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import { View, FlatList, Image, Text, TouchableOpacity } from 'react-native';
+import { View, FlatList, Image, Text, TouchableOpacity, RefreshControlBase } from 'react-native';
 
 import logoImg from '../../assets/logo.png';
 import styles from './styles';
@@ -21,21 +21,16 @@ export default function Incidents() {
     }
 
     async function loadIncidents() {
-        if(loading) {
-            return;
-        }
-
-        if(total > 0 && incidents.length === total) {
+        if(loading || (total > 0 && incidents.length === total)) {
             return;
         }
 
         setLoading(true);
-        
-        
+
         const res = await api.get('incidents', {
-            params: page
-        });  
-        
+            params: { page }
+        });
+
         setIncidents([...incidents, ...res.data]);
         setTotal(res.headers['x-total-count']);
         setPage(page + 1);
